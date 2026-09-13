@@ -1,0 +1,34 @@
+name: Compila App per macOS
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+
+    steps:
+    - name: Scarica il codice
+      uses: actions/checkout@v4
+
+    - name: Configura Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Installa dipendenze
+      run: |
+        python -m pip install --upgrade pip
+        pip install PySide6 pyinstaller
+
+    - name: Compila con PyInstaller
+      run: |
+        pyinstaller --clean --noconfirm --onedir --windowed --name "GestionaleMedico" --distpath "./dist_mac" main.py
+
+    - name: Carica il file finale
+      uses: actions/upload-artifact@v4
+      with:
+        name: GestionaleMedico-macOS
+        path: dist_mac/
